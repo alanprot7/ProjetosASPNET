@@ -1,0 +1,85 @@
+﻿@{ 
+    ViewBag.Title = "Listagem de Produtos";
+}
+
+<h2>@ViewBag.Title</h2>
+<div>
+    <a class="btn btn-outline-success" href="~/Produtos/AddEdit"><i class="far fa-plus-square"></i> Novo Produto</a>
+    <a class="btn btn-outline-warning ml-4" href="~/Produtos/GerarPdf" target="_blank"><i class="far fa-file-pdf"></i> Relatório</a>
+</div>
+<table class="table table-striped table-hover mt-3">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Preço</th>
+            <th>Qtde</th>
+            <th>Tipo</th>
+            <th>DataCadastro</th>
+            <th></th>
+        </tr>
+    </thead>
+    @foreach (var produto in Model)
+    {
+        <tr id="produto-@produto.Id">
+            <td>@produto.Nome</td>
+            <td>@produto.Preco</td>
+            <td>@produto.Qtde</td>
+            <td>@produto.TipoDeProduto.Nome</td>
+            <td>@produto.DataCadastro</td>
+            <td>
+                <a class="btn btn-sm btn-outline-info" href="~/Produtos/AddEdit/@produto.Id"><i class="fas fa-edit"></i> Editar</a>
+                <button class="btn btn-sm btn-outline-danger" onclick="DeletarProduto(@produto.Id, '@produto.Nome')"><i class="fas fa-trash-alt"></i> Excluir</button>
+            </td>
+        </tr>
+    }
+
+</table>
+
+<div id="delModal" data-id="0" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Remover Produto</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Deseja remover o produto <strong><span id="nomeModal"></span></strong>?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                <button onclick="ConfirmaDeletar()" type="button" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function DeletarProduto(id, nome) {
+        $('#nomeModal').text(nome)
+        $('#delModal').data('id', id).modal('show')
+    }
+    function ConfirmaDeletar() {
+        let xhr = new XMLHttpRequest()
+        let id = $('#delModal').data('id')
+        const url = `/Produtos/DeletarProduto/${id}`
+
+        xhr.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 404) {
+                toastr.error("Produto não encontrado!!", "FN Store")
+            }
+            if (this.readyState === 4 && this.status === 200) {
+                let tr = document.querySelector(`#produto-${id}`)
+                if (tr != null) {
+                    tr.remove()
+                }
+                toastr.success("Produto removido com sucesso!", "FN Store")
+            }
+            $('#delModal').data('id', 0).modal('hide')
+        }
+
+        xhr.open('get', url)
+        xhr.send()
+    }
+</script>

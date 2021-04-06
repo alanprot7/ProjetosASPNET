@@ -1,0 +1,36 @@
+﻿@{ 
+    ViewBag.Title = $"{( Model.Id == 0 ? "Adicionar" : "Editar")} Produto";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<form method="post" class="form-group">
+    <div>
+        <label>Nome</label>
+        <input class="form-control mb-3" type="text" name="Nome" value="@Model.Nome" autofocus>
+    </div>
+    <div>
+        <label>Preço</label>
+        <input class="form-control mb-3" type="text" name="Preco" value="@Model.Preco">
+    </div>
+    <div>
+        <label>Qtde</label>
+        <input class="form-control mb-3" type="text" name="Qtde" value="@Model.Qtde">
+    </div>
+    <div>
+        <label>Tipo</label>
+        <select class="form-control mb-3" name="TipoDeProdutoId">
+            <option value="">Selecione ...</option>
+            @foreach (var tipo in ViewBag.Tipo)
+            {
+                <option @(tipo.Id == Model.TipoDeProdutoId ? "selected" : "")
+                        value="@tipo.Id">@tipo.Nome</option>
+            }
+
+        </select>
+    </div>
+    <div>
+        <button class="btn btn-outline-success"><i class="far fa-check-square"></i> Salvar</button>
+        <a class="btn btn-outline-secondary" href="~/Produtos"><i class="far fa-square"></i> Cancelar</a>
+    </div>
+</form>
